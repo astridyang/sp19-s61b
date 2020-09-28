@@ -5,7 +5,7 @@ import java.util.Formatter;
  * with a large number of additional methods.
  *
  * @author P. N. Hilfinger, with some modifications by Josh Hug and melaniecebula
- *         [Do not modify this file.]
+ * [Do not modify this file.]
  */
 public class IntList {
     /**
@@ -29,8 +29,96 @@ public class IntList {
      * A List with null rest, and first = 0.
      */
     public IntList() {
-    /* NOTE: public IntList () { }  would also work. */
+        /* NOTE: public IntList () { }  would also work. */
         this(0, null);
+    }
+
+    /**
+     * Return the size of the list using... recursion!
+     */
+    public int size() {
+        if (rest == null) {
+            return 1;
+        }
+        return 1 + this.rest.size();
+    }
+
+    /**
+     * Return the size of the list using no recursion!
+     */
+    public int iterativeSize() {
+        int totalSize = 0;
+        IntList p = this;
+        while (p != null) {
+            totalSize += 1;
+            p = p.rest;
+        }
+        return totalSize;
+    }
+
+    /**
+     * Returns an IntList ident ical to L, but with
+     * each element incremented by x. L is not allowed
+     * to change.
+     */
+    public static IntList incrList(IntList L, int x) {
+        /* Your code here. */
+        if (L == null) {
+            return null;
+        }
+        return new IntList(L.first + x, incrList(L.rest, x));
+    }
+
+    /**
+     * Returns an IntList identical to L, but with
+     * each element incremented by x. Not allowed to use
+     * the 'new' keyword.
+     */
+    public static IntList dincrList(IntList L, int x) {
+        /* Your code here. */
+        if (L == null) {
+            return null;
+        }
+        L.first += x;
+        IntList p = L.rest;
+        while (p != null) {
+            p.first += x;
+            p = p.rest;
+        }
+        return L;
+    }
+
+    /**
+     * Returns the ith value in this list.
+     */
+    public int get(int i) {
+        if (i == 0) {
+            return first;
+        }
+        return rest.get(i - 1);
+    }
+
+    public static void main(String[] args) {
+        IntList L = new IntList(5, null);
+        L.rest = new IntList(7, null);
+        L.rest.rest = new IntList(9, null);
+
+//        System.out.println(L.size());
+//        System.out.println(L.iterativeSize());
+//        System.out.println(L.get(1));
+//        System.out.println(incrList(L, 3));
+//        System.out.println(dincrList(L, 3));
+//        System.out.println(square(L));
+        System.out.println(squareDestructive(L));
+    }
+
+    public static IntList squareDestructive(IntList L) {
+        IntList B = L;
+        while (B != null) {
+            B.first = B.first * B.first;
+            B = B.rest;
+        }
+        return L;
     }
 
     /**
@@ -82,7 +170,15 @@ public class IntList {
 
     public static IntList dcatenate(IntList A, IntList B) {
         //TODO:  fill in method
-        return null;
+        IntList p = A.rest;
+        IntList prev = null;
+        while (p != null) {
+            prev = p;
+            p = p.rest;
+        }
+        assert prev != null;
+        prev.rest = B;
+        return A;
     }
 
     /**
@@ -91,23 +187,24 @@ public class IntList {
      */
     public static IntList catenate(IntList A, IntList B) {
         //TODO:  fill in method
-        return null;
+        IntList result = new IntList(A.first, null);
+        IntList p = result;
+        IntList q = A.rest;
+        while (q != null) {
+            p.rest = new IntList(q.first, null);
+            p = p.rest;
+            q = q.rest;
+        }
+        return dcatenate(result, B);
     }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+    public static IntList square(IntList L) {
+        if (L == null) {
+            return null;
+        }
+        IntList rest = square(L.rest);
+        return new IntList(L.first * L.first, rest);
+    }
 
     /**
      * DO NOT MODIFY ANYTHING BELOW THIS LINE! Many of the concepts below here
