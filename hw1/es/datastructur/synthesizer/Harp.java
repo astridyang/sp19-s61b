@@ -1,7 +1,7 @@
 package es.datastructur.synthesizer;
 
 //Note: This file will not compile until you complete task 1 (BoundedQueue).
-public class GuitarString {
+public class Harp {
     /**
      * Constants. Do not change. In case you're curious, the keyword final
      * means the values cannot be changed at runtime.
@@ -13,12 +13,12 @@ public class GuitarString {
     private BoundedQueue<Double> buffer;
 
     /* Create a guitar string of the given frequency.  */
-    public GuitarString(double frequency) {
+    public Harp(double frequency) {
         // TODO: Create a buffer with capacity = SR / frequency. You'll need to
         //       cast the result of this division operation into an int. For
         //       better accuracy, use the Math.round() function before casting.
         //       Your buffer should be initially filled with zeros.
-        int capacity = (int) Math.round(SR / frequency);
+        int capacity = (int) Math.round(SR / frequency) * 2;
         buffer = new ArrayRingBuffer<>(capacity);
         for (int i = 0; i < capacity; i++) {
             buffer.enqueue(0.00);
@@ -49,7 +49,7 @@ public class GuitarString {
         //       Do not call StdAudio.play().
         double os1 = buffer.dequeue();
         double os2 = buffer.peek();
-        double ns = (os1 + os2) / 2 * DECAY;
+        double ns = -(os1 + os2) / 2 * DECAY;
         buffer.enqueue(ns);
     }
 
