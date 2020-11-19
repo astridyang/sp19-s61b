@@ -5,12 +5,11 @@ import java.util.Set;
 public class MyHashMap<K, V> implements Map61B<K, V> {
     public static final int DEFAULT_INITIAL_SIZE = 16;
     public static final double DEFAULT_LOAD_FACTOR = 0.75;
-    int initialSize;
-    double loadFactor;
-    int size = 0;
-    int threshold;
+    private int initialSize;
+    private double loadFactor;
+    private int size = 0;
+    private int threshold;
     BucketItem<K, V>[] hashTable;
-
 
     private static class BucketItem<K, V> {
         K key;
@@ -27,38 +26,6 @@ public class MyHashMap<K, V> implements Map61B<K, V> {
             this.next = n;
         }
 
-        private boolean put(K key, V value) {
-            return put(key, value, this);
-        }
-
-        private boolean put(K key,
-                            V value,
-                            BucketItem<K, V> kvBucketItem) {
-            if (kvBucketItem.key == key) {
-                kvBucketItem.value = value;
-                return false;
-            }
-            if (kvBucketItem.next == null) {
-                kvBucketItem.next = new BucketItem<>(key, value);
-                return true;
-            }
-            return put(key, value, kvBucketItem.next);
-        }
-
-        private BucketItem<K, V> find(K key) {
-            return find(key, this);
-        }
-
-        private BucketItem<K, V> find(K key, BucketItem<K, V> b) {
-            if (b == null) {
-                return null;
-            }
-            if (b.key.equals(key)) {
-                return b;
-            }
-            return find(key, b.next);
-        }
-
         private void add(BucketItem<K, V> x) {
             BucketItem<K, V> b = this;
             while (b.next != null) {
@@ -67,6 +34,32 @@ public class MyHashMap<K, V> implements Map61B<K, V> {
             b.next = x;
         }
 
+        private boolean put(K key, V value) {
+            return put(key, value, this);
+        }
+
+        private boolean put(K key, V value, BucketItem<K, V> b) {
+            if (b.key.equals(key)) {
+                b.value = value;
+                return false;
+            }
+            if (b.next == null) {
+                b.next = new BucketItem<>(key, value);
+                return true;
+            }
+            return put(key, value, b.next);
+        }
+
+        private BucketItem<K, V> find(K key) {
+            return find(key, this);
+        }
+
+        private BucketItem<K, V> find(K key, BucketItem<K, V> b) {
+            if (b.key.equals(key)) {
+                return b;
+            }
+            return find(key, b.next);
+        }
     }
 
     public MyHashMap() {
@@ -80,7 +73,7 @@ public class MyHashMap<K, V> implements Map61B<K, V> {
     public MyHashMap(int initialSize, double loadFactor) {
         this.initialSize = initialSize;
         this.loadFactor = loadFactor;
-        this.threshold = (int) (initialSize * loadFactor);
+        threshold = (int) (initialSize * loadFactor);
         hashTable = new BucketItem[initialSize];
     }
 
@@ -102,6 +95,7 @@ public class MyHashMap<K, V> implements Map61B<K, V> {
         return get(key) != null;
     }
 
+
     @Override
     public V get(K key) {
         if (key == null) {
@@ -111,11 +105,12 @@ public class MyHashMap<K, V> implements Map61B<K, V> {
         if (hashTable[keyHash] == null) {
             return null;
         }
-        if (hashTable[keyHash] == key) {
-            return hashTable[keyHash].value;
-        }
         BucketItem<K, V> b = hashTable[keyHash].find(key);
         return b == null ? null : b.value;
+    }
+
+    private int hash(K key) {
+        return hash(key, hashTable.length);
     }
 
     @Override
@@ -134,7 +129,7 @@ public class MyHashMap<K, V> implements Map61B<K, V> {
         if (size + 1 > threshold) {
             resize();
         }
-        int keyHash = hash(key);
+        int keyHash = hash(key, hashTable.length);
         if (hashTable[keyHash] == null) {
             hashTable[keyHash] = new BucketItem<>(key, value);
             size += 1;
@@ -147,28 +142,25 @@ public class MyHashMap<K, V> implements Map61B<K, V> {
     }
 
     private void resize() {
-        BucketItem<K, V>[] newTable = new BucketItem[initialSize * 2];
+        BucketItem<K, V>[] newTable = new BucketItem[hashTable.length * 2];
         threshold = (int) (newTable.length * loadFactor);
         for (BucketItem<K, V> b : hashTable) {
             if (b == null) {
                 continue;
             }
-            int newHash = hash(b.key, newTable.length);
-            if (newTable[newHash] == null) {
-                newTable[newHash] = b;
+            int newKeyHash = hash(b.key, newTable.length);
+            if (newTable[newKeyHash] == null) {
+                newTable[newKeyHash] = new BucketItem<>(b.key, b.value);
             } else {
-                newTable[newHash].add(b);
+                newTable[newKeyHash].add(b);
             }
         }
     }
 
-    private int hash(K key) {
-        return hash(key, hashTable.length);
+    private int hash(K key, int length) {
+        return (key.hashCode() & 0x7FFFFFFF) % length;
     }
 
-    private int hash(K key, int capacity) {
-        return (key.hashCode() & 0x7FFFFFFF) % capacity;
-    }
 
     @Override
     public Set<K> keySet() {
@@ -196,4 +188,5 @@ public class MyHashMap<K, V> implements Map61B<K, V> {
     public Iterator<K> iterator() {
         return keySet().iterator();
     }
+
 }

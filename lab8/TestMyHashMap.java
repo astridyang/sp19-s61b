@@ -84,11 +84,11 @@ public class TestMyHashMap {
     public void sanityKeySetTest() {
         MyHashMap<String, Integer> b = new MyHashMap<String, Integer>();
         HashSet<String> values = new HashSet<String>();
-        for (int i = 0; i < 17; i++) {
+        for (int i = 0; i < 465; i++) {
             b.put("hi" + i, 1);   
             values.add("hi" + i);
         }
-        assertEquals(17, b.size()); //keys are there
+        assertEquals(465, b.size()); //keys are there
         Set<String> keySet = b.keySet();
         assertTrue(values.containsAll(keySet));
         assertTrue(keySet.containsAll(values));

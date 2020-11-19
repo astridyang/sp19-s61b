@@ -11,13 +11,13 @@ public class TestMyTrieSet {
     @Test
     public void sanityClearTest() {
         MyTrieSet t = new MyTrieSet();
-        for (int i = 0; i < 455; i++) {
+        for (int i = 0; i < 10; i++) {
             t.add("hi" + i);
             //make sure put is working via contains
             assertTrue(t.contains("hi" + i));
         }
         t.clear();
-        for (int i = 0; i < 455; i++) {
+        for (int i = 0; i < 10; i++) {
             assertFalse(t.contains("hi" + i));
         }
     }
